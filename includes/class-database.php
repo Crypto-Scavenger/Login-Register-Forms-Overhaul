@@ -79,10 +79,9 @@ class LRFO_Database {
 				setting_value longtext,
 				PRIMARY KEY (id),
 				UNIQUE KEY setting_key (setting_key)
-			) %s',
-			$this->settings_table,
-			$charset_collate
-		);
+			)',
+			$this->settings_table
+		) . ' ' . $charset_collate;
 
 		$codes_sql = $wpdb->prepare(
 			'CREATE TABLE IF NOT EXISTS %i (
@@ -98,10 +97,9 @@ class LRFO_Database {
 				PRIMARY KEY (id),
 				UNIQUE KEY code_string (code_string),
 				KEY is_active (is_active)
-			) %s',
-			$this->codes_table,
-			$charset_collate
-		);
+			)',
+			$this->codes_table
+		) . ' ' . $charset_collate;
 
 		$usage_sql = $wpdb->prepare(
 			'CREATE TABLE IF NOT EXISTS %i (
@@ -115,10 +113,9 @@ class LRFO_Database {
 				KEY code_id (code_id),
 				KEY ip_address (ip_address),
 				KEY attempted_at (attempted_at)
-			) %s',
-			$this->usage_table,
-			$charset_collate
-		);
+			)',
+			$this->usage_table
+		) . ' ' . $charset_collate;
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $settings_sql );
