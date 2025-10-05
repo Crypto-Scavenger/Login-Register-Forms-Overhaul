@@ -16,6 +16,7 @@ class LRFO_Database {
 	private $codes_table;
 	private $usage_table;
 	private $settings_cache = array();
+	private $table_verified = null;
 
 	public function __construct() {
 		global $wpdb;
@@ -28,6 +29,43 @@ class LRFO_Database {
 		$instance = new self();
 		$instance->create_tables();
 		$instance->insert_defaults();
+	}
+
+	private function ensure_tables_exist() {
+		if ( true === $this->table_verified ) {
+			return true;
+		}
+
+		global $wpdb;
+
+		$table_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				'SHOW TABLES LIKE %s',
+				$this->settings_table
+			)
+		);
+
+		if ( $this->settings_table === $table_exists ) {
+			$this->table_verified = true;
+			return true;
+		}
+
+		$this->create_tables();
+
+		$table_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				'SHOW TABLES LIKE %s',
+				$this->settings_table
+			)
+		);
+
+		if ( $this->settings_table === $table_exists ) {
+			$this->table_verified = true;
+			$this->insert_defaults();
+			return true;
+		}
+
+		return false;
 	}
 
 	private function create_tables() {
@@ -115,11 +153,18 @@ class LRFO_Database {
 		);
 
 		foreach ( $defaults as $key => $value ) {
-			$this->save_setting( $key, $value );
+			$existing = $this->get_setting( $key );
+			if ( false === $existing ) {
+				$this->save_setting( $key, $value );
+			}
 		}
 	}
 
 	public function save_setting( $key, $value ) {
+		if ( ! $this->ensure_tables_exist() ) {
+			return false;
+		}
+
 		global $wpdb;
 
 		$existing = $wpdb->get_var(
@@ -157,7 +202,11 @@ class LRFO_Database {
 		return false !== $result;
 	}
 
-	public function get_setting( $key, $default = '' ) {
+	public function get_setting( $key, $default = false ) {
+		if ( ! $this->ensure_tables_exist() ) {
+			return $default;
+		}
+
 		if ( isset( $this->settings_cache[ $key ] ) ) {
 			return $this->settings_cache[ $key ];
 		}
@@ -179,7 +228,10 @@ class LRFO_Database {
 			)
 		);
 
-		$value = ( null !== $value ) ? $value : $default;
+		if ( null === $value ) {
+			return $default;
+		}
+
 		$this->settings_cache[ $key ] = $value;
 		wp_cache_set( $cache_key, $value, 'lrfo_settings', 3600 );
 
@@ -187,6 +239,10 @@ class LRFO_Database {
 	}
 
 	public function get_all_settings() {
+		if ( ! $this->ensure_tables_exist() ) {
+			return array();
+		}
+
 		global $wpdb;
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
