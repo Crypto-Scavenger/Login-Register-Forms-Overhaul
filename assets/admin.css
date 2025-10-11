@@ -1,75 +1,47 @@
 /**
- * Admin styles for Login & Register Forms Overhaul
- *
- * @package LoginRegisterFormsOverhaul
- * @since   1.0.0
+ * Login Forms Overhaul - Admin Styles
  */
 
-.lrfo-admin .nav-tab-wrapper {
+.lfo-preview-notice {
+	margin-top: 30px;
+	padding: 15px 20px;
+	background: #fff;
+	border-left: 4px solid #2271b1;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.lfo-preview-notice p {
+	margin: 0;
+	font-size: 14px;
+}
+
+.lfo-preview-notice i {
+	color: #2271b1;
+	margin-right: 8px;
+}
+
+.lfo-preview-notice a {
+	font-weight: 600;
+	text-decoration: none;
+	margin-left: 5px;
+}
+
+.form-table th {
+	width: 220px;
+}
+
+.form-table textarea.code {
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 13px;
+	line-height: 1.6;
+	tab-size: 4;
+}
+
+.nav-tab-wrapper {
 	margin-bottom: 20px;
 }
 
-.lrfo-admin .form-table th {
-	width: 280px;
-	font-weight: 600;
-}
-
-.lrfo-admin .form-table td {
-	padding: 15px 10px;
-}
-
-.lrfo-admin .form-table .description {
-	margin-top: 8px;
-	color: #646970;
-	font-style: italic;
-}
-
-.lrfo-admin h2 {
-	margin-top: 2em;
-	padding-top: 1em;
-	border-top: 1px solid #dcdcde;
-}
-
-.lrfo-admin h2:first-of-type {
-	margin-top: 1em;
-	padding-top: 0;
-	border-top: none;
-}
-
-.lrfo-admin h3 {
-	margin-top: 1.5em;
-}
-
-.lrfo-invite-codes {
-	margin-top: 20px;
-}
-
-.lrfo-create-code-form {
-	background: #f9f9f9;
-	padding: 20px;
-	border: 1px solid #dcdcde;
-	border-radius: 4px;
-}
-
-.widefat th,
-.widefat td {
-	padding: 10px;
-}
-
-@media screen and (max-width: 782px) {
-	.lrfo-admin .form-table th,
-	.lrfo-admin .form-table td {
-		display: block;
-		width: 100%;
-		padding: 10px;
-	}
-	
-	.lrfo-admin .form-table th {
-		padding-bottom: 5px;
-		border-bottom: 1px solid #dcdcde;
-	}
-	
-	.lrfo-admin .form-table td {
-		padding-top: 10px;
-	}
+.wrap h1 i {
+	margin-right: 10px;
+	color: #2271b1;
 }
