@@ -1,17 +1,10 @@
 /**
- * Login page styles for Login & Register Forms Overhaul
- * Futuristic cyberpunk theme
- *
- * @package LoginRegisterFormsOverhaul
- * @since   1.0.0
+ * Login Forms Overhaul - Dark Cyberpunk Theme
+ * Futuristic surveillance aesthetic with #262626, #ffffff, #d11c1c
  */
 
 body.login {
-	background: #262626;
-	background-image: 
-		linear-gradient(rgba(214, 28, 28, 0.03) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(214, 28, 28, 0.03) 1px, transparent 1px);
-	background-size: 50px 50px;
+	background: #262626 !important;
 	position: relative;
 	overflow-x: hidden;
 }
@@ -23,142 +16,169 @@ body.login::before {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: radial-gradient(circle at 50% 50%, rgba(214, 28, 28, 0.1) 0%, transparent 70%);
+	background: 
+		repeating-linear-gradient(
+			0deg,
+			rgba(209, 28, 28, 0.03) 0px,
+			transparent 1px,
+			transparent 2px,
+			rgba(209, 28, 28, 0.03) 3px
+		),
+		repeating-linear-gradient(
+			90deg,
+			rgba(209, 28, 28, 0.03) 0px,
+			transparent 1px,
+			transparent 2px,
+			rgba(209, 28, 28, 0.03) 3px
+		);
+	pointer-events: none;
+	z-index: 1;
+	animation: scan 8s linear infinite;
+}
+
+@keyframes scan {
+	0% { transform: translateY(0); }
+	100% { transform: translateY(20px); }
+}
+
+body.login::after {
+	content: '';
+	position: fixed;
+	top: -50%;
+	left: -50%;
+	width: 200%;
+	height: 200%;
+	background: radial-gradient(
+		circle at center,
+		transparent 0%,
+		rgba(209, 28, 28, 0.1) 50%,
+		transparent 100%
+	);
 	pointer-events: none;
 	z-index: 0;
+	animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+	0%, 100% { opacity: 0.3; }
+	50% { opacity: 0.6; }
 }
 
 #login {
 	position: relative;
-	z-index: 1;
+	z-index: 10;
 	padding: 8% 0 0;
 }
 
-#login h1 a {
-	background-size: contain;
-	background-position: center;
-	width: 100%;
-	height: 100px;
-	margin-bottom: 20px;
-	transition: all 0.3s ease;
-	filter: drop-shadow(0 0 10px rgba(214, 28, 28, 0.5));
+#login h1 a,
+.login h1 a {
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 84"><rect width="84" height="84" fill="%23d11c1c"/><text x="42" y="54" font-family="monospace" font-size="32" fill="%23ffffff" text-anchor="middle" font-weight="bold">█▓▒░</text></svg>') !important;
+	width: 84px !important;
+	height: 84px !important;
+	background-size: 84px 84px !important;
+	background-position: center !important;
+	margin: 0 auto 25px !important;
+	box-shadow: 
+		0 0 20px rgba(209, 28, 28, 0.5),
+		0 0 40px rgba(209, 28, 28, 0.3),
+		inset 0 0 20px rgba(0, 0, 0, 0.5);
+	border: 2px solid #d11c1c;
+	animation: glow 2s ease-in-out infinite alternate;
 }
 
-#login h1 a:hover {
-	filter: drop-shadow(0 0 20px rgba(214, 28, 28, 0.8));
-	transform: scale(1.05);
+@keyframes glow {
+	from {
+		box-shadow: 
+			0 0 20px rgba(209, 28, 28, 0.5),
+			0 0 40px rgba(209, 28, 28, 0.3),
+			inset 0 0 20px rgba(0, 0, 0, 0.5);
+	}
+	to {
+		box-shadow: 
+			0 0 30px rgba(209, 28, 28, 0.8),
+			0 0 60px rgba(209, 28, 28, 0.5),
+			inset 0 0 20px rgba(0, 0, 0, 0.5);
+	}
 }
 
 #loginform,
-#registerform,
-#lostpasswordform {
-	background: rgba(38, 38, 38, 0.95);
-	border: 2px solid #d11c1c;
+#lostpasswordform,
+#registerform {
+	background: rgba(30, 30, 30, 0.95) !important;
+	border: 2px solid #d11c1c !important;
 	box-shadow: 
-		0 0 40px rgba(214, 28, 28, 0.3),
-		inset 0 0 60px rgba(214, 28, 28, 0.05);
-	border-radius: 8px;
-	padding: 30px;
-	backdrop-filter: blur(10px);
+		0 0 30px rgba(209, 28, 28, 0.3),
+		inset 0 0 40px rgba(0, 0, 0, 0.3) !important;
+	padding: 26px 24px 46px !important;
 	position: relative;
-	overflow: hidden;
-	animation: formGlow 3s ease-in-out infinite;
-}
-
-@keyframes formGlow {
-	0%, 100% {
-		box-shadow: 
-			0 0 40px rgba(214, 28, 28, 0.3),
-			inset 0 0 60px rgba(214, 28, 28, 0.05);
-	}
-	50% {
-		box-shadow: 
-			0 0 60px rgba(214, 28, 28, 0.5),
-			inset 0 0 80px rgba(214, 28, 28, 0.08);
-	}
 }
 
 #loginform::before,
-#registerform::before,
-#lostpasswordform::before {
+#lostpasswordform::before,
+#registerform::before {
 	content: '';
 	position: absolute;
-	top: -2px;
-	left: -2px;
-	right: -2px;
-	bottom: -2px;
-	background: linear-gradient(45deg, #d11c1c, transparent, #d11c1c);
-	z-index: -1;
-	border-radius: 8px;
-	opacity: 0.3;
-	animation: borderRotate 4s linear infinite;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		#d11c1c,
+		transparent
+	);
+	animation: slide 3s linear infinite;
 }
 
-@keyframes borderRotate {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
+@keyframes slide {
+	0% { transform: translateX(-100%); }
+	100% { transform: translateX(100%); }
 }
 
-#loginform label,
-#registerform label,
-#lostpasswordform label {
-	color: #ffffff;
-	font-weight: 500;
-	text-transform: uppercase;
-	font-size: 11px;
-	letter-spacing: 1px;
-	text-shadow: 0 0 10px rgba(214, 28, 28, 0.5);
-}
-
-#loginform input[type="text"],
-#loginform input[type="password"],
-#loginform input[type="email"],
-#registerform input[type="text"],
-#registerform input[type="password"],
-#registerform input[type="email"],
-#lostpasswordform input[type="text"],
-#lostpasswordform input[type="email"] {
-	background: rgba(0, 0, 0, 0.6);
-	border: 1px solid rgba(214, 28, 28, 0.4);
-	color: #ffffff;
-	border-radius: 4px;
-	padding: 10px 15px;
+.login form .input,
+.login input[type="text"],
+.login input[type="password"] {
+	background: rgba(0, 0, 0, 0.6) !important;
+	border: 1px solid rgba(209, 28, 28, 0.3) !important;
+	color: #ffffff !important;
+	font-family: 'Courier New', monospace;
 	font-size: 14px;
+	padding: 8px;
 	transition: all 0.3s ease;
 	box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-#loginform input[type="text"]:focus,
-#loginform input[type="password"]:focus,
-#loginform input[type="email"]:focus,
-#registerform input[type="text"]:focus,
-#registerform input[type="password"]:focus,
-#registerform input[type="email"]:focus,
-#lostpasswordform input[type="text"]:focus,
-#lostpasswordform input[type="email"]:focus {
-	background: rgba(0, 0, 0, 0.8);
-	border-color: #d11c1c;
-	outline: none;
+.login form .input:focus,
+.login input[type="text"]:focus,
+.login input[type="password"]:focus {
+	background: rgba(0, 0, 0, 0.8) !important;
+	border-color: #d11c1c !important;
 	box-shadow: 
-		inset 0 2px 10px rgba(0, 0, 0, 0.5),
-		0 0 20px rgba(214, 28, 28, 0.4);
+		0 0 15px rgba(209, 28, 28, 0.5),
+		inset 0 2px 10px rgba(0, 0, 0, 0.5) !important;
+	outline: none;
+}
+
+.login label {
+	color: #ffffff !important;
+	font-family: 'Courier New', monospace;
+	font-size: 13px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 1px;
 }
 
 .wp-core-ui .button-primary {
-	background: #d11c1c;
-	border: 1px solid #d11c1c;
-	color: #ffffff;
-	text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	background: #d11c1c !important;
+	border: 2px solid #d11c1c !important;
 	box-shadow: 
-		0 4px 15px rgba(214, 28, 28, 0.4),
-		inset 0 1px 0 rgba(255, 255, 255, 0.1);
-	border-radius: 4px;
-	padding: 8px 30px;
-	font-weight: 600;
+		0 4px 15px rgba(209, 28, 28, 0.4),
+		inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+	text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.5) !important;
+	color: #ffffff !important;
+	font-family: 'Courier New', monospace;
+	font-weight: bold;
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	transition: all 0.3s ease;
@@ -169,224 +189,119 @@ body.login::before {
 .wp-core-ui .button-primary::before {
 	content: '';
 	position: absolute;
-	top: 0;
-	left: -100%;
-	width: 100%;
-	height: 100%;
-	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-	transition: left 0.5s ease;
+	top: 50%;
+	left: 50%;
+	width: 0;
+	height: 0;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.3);
+	transform: translate(-50%, -50%);
+	transition: width 0.6s, height 0.6s;
 }
 
 .wp-core-ui .button-primary:hover::before {
-	left: 100%;
+	width: 300px;
+	height: 300px;
 }
 
 .wp-core-ui .button-primary:hover,
 .wp-core-ui .button-primary:focus {
-	background: #ff2424;
-	border-color: #ff2424;
-	color: #ffffff;
+	background: #ff2a2a !important;
+	border-color: #ff2a2a !important;
 	box-shadow: 
-		0 6px 25px rgba(214, 28, 28, 0.6),
-		inset 0 1px 0 rgba(255, 255, 255, 0.2);
-	transform: translateY(-2px);
+		0 6px 20px rgba(209, 28, 28, 0.6),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 
-.wp-core-ui .button-primary:active {
-	transform: translateY(0);
-	box-shadow: 
-		0 2px 10px rgba(214, 28, 28, 0.4),
-		inset 0 1px 0 rgba(255, 255, 255, 0.1);
+#login_error,
+.message,
+.login .notice {
+	background: rgba(30, 30, 30, 0.95) !important;
+	border-left: 4px solid #d11c1c !important;
+	border-right: 1px solid rgba(209, 28, 28, 0.3);
+	border-top: 1px solid rgba(209, 28, 28, 0.3);
+	border-bottom: 1px solid rgba(209, 28, 28, 0.3);
+	box-shadow: 0 0 20px rgba(209, 28, 28, 0.2);
+	color: #ffffff !important;
+	font-family: 'Courier New', monospace;
 }
 
-#login form p {
-	margin-bottom: 20px;
+#login_error strong,
+.message strong {
+	color: #d11c1c;
 }
 
-#login form .forgetmenot {
-	margin-top: 10px;
-}
-
-#login form .forgetmenot label {
-	color: #ffffff;
-	font-size: 13px;
-	text-transform: none;
-	letter-spacing: normal;
-	font-weight: normal;
-}
-
-#login form input[type="checkbox"] {
-	border: 2px solid rgba(214, 28, 28, 0.4);
-	background: rgba(0, 0, 0, 0.6);
+.login #backtoblog a,
+.login #nav a {
+	color: rgba(255, 255, 255, 0.7) !important;
+	font-family: 'Courier New', monospace;
 	transition: all 0.3s ease;
+	text-shadow: 0 0 10px rgba(209, 28, 28, 0);
 }
 
-#login form input[type="checkbox"]:checked::before {
-	color: #d11c1c;
-	text-shadow: 0 0 5px rgba(214, 28, 28, 0.8);
-}
-
-#login #nav,
-#login #backtoblog {
-	text-align: center;
-	padding: 0;
-	margin: 15px 0 0;
-}
-
-#login #nav a,
-#login #backtoblog a {
-	color: #ffffff;
-	text-decoration: none;
-	transition: all 0.3s ease;
-	text-shadow: 0 0 5px rgba(214, 28, 28, 0.3);
-	font-size: 13px;
-	position: relative;
-}
-
-#login #nav a::after,
-#login #backtoblog a::after {
-	content: '';
-	position: absolute;
-	bottom: -2px;
-	left: 0;
-	width: 0;
-	height: 2px;
-	background: #d11c1c;
-	transition: width 0.3s ease;
-}
-
-#login #nav a:hover,
-#login #backtoblog a:hover,
-#login #nav a:focus,
-#login #backtoblog a:focus {
-	color: #d11c1c;
-	text-shadow: 0 0 10px rgba(214, 28, 28, 0.8);
-}
-
-#login #nav a:hover::after,
-#login #backtoblog a:hover::after {
-	width: 100%;
-}
-
-.login .message,
-.login .success,
-.login #login_error {
-	background: rgba(38, 38, 38, 0.95);
-	border-left: 4px solid #d11c1c;
-	color: #ffffff;
-	box-shadow: 0 0 20px rgba(214, 28, 28, 0.3);
-	backdrop-filter: blur(10px);
-	padding: 15px;
-	margin-bottom: 20px;
-}
-
-.login .message a,
-.login .success a,
-.login #login_error a {
-	color: #d11c1c;
-	text-shadow: 0 0 5px rgba(214, 28, 28, 0.5);
-}
-
-.login .success {
-	border-left-color: #46b450;
-	box-shadow: 0 0 20px rgba(70, 180, 80, 0.3);
+.login #backtoblog a:hover,
+.login #nav a:hover,
+.login #backtoblog a:focus,
+.login #nav a:focus {
+	color: #d11c1c !important;
+	text-shadow: 0 0 10px rgba(209, 28, 28, 0.8);
 }
 
 .login .privacy-policy-page-link {
-	text-align: center;
-	margin-top: 15px;
-}
-
-.login .privacy-policy-page-link a {
-	color: rgba(255, 255, 255, 0.7);
-	text-decoration: none;
+	color: rgba(255, 255, 255, 0.5) !important;
+	font-family: 'Courier New', monospace;
 	font-size: 12px;
-	transition: all 0.3s ease;
 }
 
-.login .privacy-policy-page-link a:hover {
-	color: #d11c1c;
-	text-shadow: 0 0 10px rgba(214, 28, 28, 0.5);
+.login .privacy-policy-page-link:hover {
+	color: #d11c1c !important;
+}
+
+.forgetmenot {
+	font-family: 'Courier New', monospace;
+}
+
+.forgetmenot input[type="checkbox"] {
+	accent-color: #d11c1c;
+}
+
+@media screen and (max-width: 768px) {
+	body.login::before {
+		background-size: 2px 2px;
+	}
+	
+	#login h1 a,
+	.login h1 a {
+		width: 64px !important;
+		height: 64px !important;
+		background-size: 64px 64px !important;
+	}
+	
+	#loginform,
+	#lostpasswordform,
+	#registerform {
+		padding: 20px 20px 40px !important;
+	}
+}
+
+.interim-login #login h1 a {
+	margin-bottom: 16px;
 }
 
 .language-switcher {
-	background: rgba(38, 38, 38, 0.8);
-	border: 1px solid rgba(214, 28, 28, 0.3);
-	border-radius: 4px;
-	padding: 10px;
+	text-align: center;
 	margin-top: 20px;
 }
 
 .language-switcher label {
-	color: #ffffff;
-	font-size: 12px;
+	display: block;
+	margin-bottom: 8px;
 }
 
 .language-switcher select {
-	background: rgba(0, 0, 0, 0.6);
-	border: 1px solid rgba(214, 28, 28, 0.4);
-	color: #ffffff;
-	border-radius: 4px;
-	padding: 5px 10px;
-}
-
-/* Mobile responsiveness */
-@media screen and (max-width: 768px) {
-	#login {
-		padding: 5% 0 0;
-		width: 90%;
-		margin: 0 auto;
-	}
-	
-	#loginform,
-	#registerform,
-	#lostpasswordform {
-		padding: 20px;
-	}
-	
-	#login h1 a {
-		height: 80px;
-	}
-	
-	.wp-core-ui .button-primary {
-		width: 100%;
-		padding: 12px;
-	}
-}
-
-/* Custom invite code field styling */
-#login form p.invite-code-field {
-	position: relative;
-}
-
-#login form p.invite-code-field::before {
-	font-family: 'Font Awesome 5 Free', 'dashicons';
-	content: '\f084';
-	position: absolute;
-	left: 15px;
-	top: 50%;
-	transform: translateY(-50%);
-	color: #d11c1c;
-	font-size: 16px;
-	pointer-events: none;
-}
-
-#login form p.invite-code-field input {
-	padding-left: 45px;
-}
-
-/* Animation for page load */
-@keyframes fadeInUp {
-	from {
-		opacity: 0;
-		transform: translateY(30px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-#login {
-	animation: fadeInUp 0.6s ease-out;
+	background: rgba(0, 0, 0, 0.6) !important;
+	border: 1px solid rgba(209, 28, 28, 0.3) !important;
+	color: #ffffff !important;
+	font-family: 'Courier New', monospace;
+	padding: 6px;
 }
