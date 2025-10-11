@@ -1,78 +1,62 @@
 <?php
 /**
- * Database operations for Login & Register Forms Overhaul
+ * Database operations
  *
- * @package LoginRegisterFormsOverhaul
- * @since   1.0.0
+ * @package LoginFormsOverhaul
+ * @since 1.0.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class LRFO_Database {
+class LFO_Database {
 
-	private $settings_table;
-	private $codes_table;
-	private $usage_table;
-	private $settings_cache = array();
+	private $settings_cache = null;
 	private $table_verified = null;
 
-	public function __construct() {
+	private function get_table_name() {
 		global $wpdb;
-		$this->settings_table = $wpdb->prefix . 'lrfo_settings';
-		$this->codes_table    = $wpdb->prefix . 'lrfo_invite_codes';
-		$this->usage_table    = $wpdb->prefix . 'lrfo_code_usage';
+		return $wpdb->prefix . 'lfo_settings';
+	}
+
+	private function ensure_table_exists() {
+		if ( null !== $this->table_verified ) {
+			return $this->table_verified;
+		}
+
+		global $wpdb;
+		$table = $this->get_table_name();
+		
+		$table_exists = $wpdb->get_var( $wpdb->prepare(
+			'SHOW TABLES LIKE %s',
+			$table
+		) );
+		
+		if ( $table !== $table_exists ) {
+			$this->create_tables();
+			$table_exists = $wpdb->get_var( $wpdb->prepare(
+				'SHOW TABLES LIKE %s',
+				$table
+			) );
+		}
+		
+		$this->table_verified = ( $table === $table_exists );
+		return $this->table_verified;
 	}
 
 	public static function activate() {
 		$instance = new self();
 		$instance->create_tables();
-		$instance->insert_defaults();
-	}
-
-	private function ensure_tables_exist() {
-		if ( true === $this->table_verified ) {
-			return true;
-		}
-
-		global $wpdb;
-
-		$table_exists = $wpdb->get_var(
-			$wpdb->prepare(
-				'SHOW TABLES LIKE %s',
-				$this->settings_table
-			)
-		);
-
-		if ( $this->settings_table === $table_exists ) {
-			$this->table_verified = true;
-			return true;
-		}
-
-		$this->create_tables();
-
-		$table_exists = $wpdb->get_var(
-			$wpdb->prepare(
-				'SHOW TABLES LIKE %s',
-				$this->settings_table
-			)
-		);
-
-		if ( $this->settings_table === $table_exists ) {
-			$this->table_verified = true;
-			$this->insert_defaults();
-			return true;
-		}
-
-		return false;
+		$instance->initialize_defaults();
 	}
 
 	private function create_tables() {
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
-
-		$settings_sql = $wpdb->prepare(
+		$table = $this->get_table_name();
+		
+		$sql = $wpdb->prepare(
 			'CREATE TABLE IF NOT EXISTS %i (
 				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				setting_key varchar(191) NOT NULL,
@@ -80,183 +64,131 @@ class LRFO_Database {
 				PRIMARY KEY (id),
 				UNIQUE KEY setting_key (setting_key)
 			)',
-			$this->settings_table
+			$table
 		) . ' ' . $charset_collate;
-
-		$codes_sql = $wpdb->prepare(
-			'CREATE TABLE IF NOT EXISTS %i (
-				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-				code_string varchar(191) NOT NULL,
-				usage_limit int(11) NOT NULL DEFAULT 1,
-				uses_remaining int(11) NOT NULL,
-				total_uses int(11) NOT NULL DEFAULT 0,
-				expiry_date bigint(20),
-				user_role varchar(50) NOT NULL DEFAULT "subscriber",
-				created_at datetime NOT NULL,
-				is_active tinyint(1) NOT NULL DEFAULT 1,
-				PRIMARY KEY (id),
-				UNIQUE KEY code_string (code_string),
-				KEY is_active (is_active)
-			)',
-			$this->codes_table
-		) . ' ' . $charset_collate;
-
-		$usage_sql = $wpdb->prepare(
-			'CREATE TABLE IF NOT EXISTS %i (
-				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-				code_id bigint(20) unsigned,
-				ip_address varchar(100),
-				attempt_type varchar(20) NOT NULL,
-				user_id bigint(20) unsigned,
-				attempted_at datetime NOT NULL,
-				PRIMARY KEY (id),
-				KEY code_id (code_id),
-				KEY ip_address (ip_address),
-				KEY attempted_at (attempted_at)
-			)',
-			$this->usage_table
-		) . ' ' . $charset_collate;
-
+		
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		dbDelta( $settings_sql );
-		dbDelta( $codes_sql );
-		dbDelta( $usage_sql );
+		dbDelta( $sql );
 	}
 
-	private function insert_defaults() {
+	private function initialize_defaults() {
 		$defaults = array(
-			'enable_custom_styles'        => '0',
-			'custom_css'                  => '',
-			'custom_js'                   => '',
-			'logo_url'                    => '',
-			'hide_login_errors'           => '0',
-			'custom_login_error_message'  => '',
-			'hide_registration_errors'    => '0',
-			'disable_registration'        => '0',
-			'custom_logout_redirect'      => '',
-			'hide_session_expire_modal'   => '0',
-			'enable_role_exceptions'      => '0',
-			'exception_roles'             => '',
-			'enable_ip_allowlist'         => '0',
-			'ip_allowlist'                => '',
-			'require_invite_code'         => '1',
-			'remove_email_requirement'    => '1',
-			'rate_limit_enabled'          => '1',
-			'rate_limit_attempts'         => '3',
-			'rate_limit_window'           => '60',
-			'notification_email'          => get_option( 'admin_email' ),
-			'notify_code_exhausted'       => '1',
-			'cleanup_on_uninstall'        => '0',
+			'enable_plugin' => '1',
+			'use_default_styles' => '1',
+			'custom_css' => '',
+			'custom_js' => '',
+			'logo_url' => '',
+			'logo_link_url' => home_url(),
+			'hide_login_errors' => '0',
+			'custom_error_message' => 'Invalid credentials.',
+			'disable_language_switcher' => '0',
+			'disable_privacy_link' => '0',
+			'disable_back_to_site' => '0',
+			'logout_redirect_url' => '',
+			'logout_skip_confirmation' => '0',
+			'login_redirect_subscriber' => '',
+			'hide_session_expire' => '0',
+			'role_exceptions' => array(),
+			'ip_allowlist' => array(),
+			'cleanup_on_uninstall' => '1',
 		);
-
+		
 		foreach ( $defaults as $key => $value ) {
-			$existing = $this->get_setting( $key );
-			if ( false === $existing ) {
+			if ( false === $this->get_setting( $key ) ) {
 				$this->save_setting( $key, $value );
 			}
 		}
 	}
 
-	public function save_setting( $key, $value ) {
-		if ( ! $this->ensure_tables_exist() ) {
-			return false;
-		}
-
-		global $wpdb;
-
-		$existing = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT id FROM %i WHERE setting_key = %s',
-				$this->settings_table,
-				$key
-			)
-		);
-
-		if ( $existing ) {
-			$result = $wpdb->update(
-				$this->settings_table,
-				array( 'setting_value' => $value ),
-				array( 'setting_key' => $key ),
-				array( '%s' ),
-				array( '%s' )
-			);
-		} else {
-			$result = $wpdb->insert(
-				$this->settings_table,
-				array(
-					'setting_key'   => $key,
-					'setting_value' => $value,
-				),
-				array( '%s', '%s' )
-			);
-		}
-
-		if ( false !== $result ) {
-			$this->settings_cache[ $key ] = $value;
-			wp_cache_delete( 'lrfo_setting_' . $key, 'lrfo_settings' );
-		}
-
-		return false !== $result;
-	}
-
 	public function get_setting( $key, $default = false ) {
-		if ( ! $this->ensure_tables_exist() ) {
+		if ( ! $this->ensure_table_exists() ) {
 			return $default;
 		}
 
-		if ( isset( $this->settings_cache[ $key ] ) ) {
-			return $this->settings_cache[ $key ];
-		}
-
-		$cache_key = 'lrfo_setting_' . $key;
-		$cached    = wp_cache_get( $cache_key, 'lrfo_settings' );
-
-		if ( false !== $cached ) {
-			$this->settings_cache[ $key ] = $cached;
-			return $cached;
-		}
-
 		global $wpdb;
-		$value = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT setting_value FROM %i WHERE setting_key = %s',
-				$this->settings_table,
-				$key
-			)
-		);
-
+		$table = $this->get_table_name();
+		
+		$value = $wpdb->get_var( $wpdb->prepare(
+			'SELECT setting_value FROM %i WHERE setting_key = %s',
+			$table,
+			$key
+		) );
+		
 		if ( null === $value ) {
 			return $default;
 		}
-
-		$this->settings_cache[ $key ] = $value;
-		wp_cache_set( $cache_key, $value, 'lrfo_settings', 3600 );
-
-		return $value;
+		
+		return maybe_unserialize( $value );
 	}
 
 	public function get_all_settings() {
-		if ( ! $this->ensure_tables_exist() ) {
+		if ( null !== $this->settings_cache ) {
+			return $this->settings_cache;
+		}
+
+		if ( ! $this->ensure_table_exists() ) {
 			return array();
 		}
 
 		global $wpdb;
+		$table = $this->get_table_name();
+		
 		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				'SELECT setting_key, setting_value FROM %i',
-				$this->settings_table
-			),
+			$wpdb->prepare( 'SELECT setting_key, setting_value FROM %i', $table ),
 			ARRAY_A
 		);
-
+		
+		if ( ! is_array( $results ) ) {
+			return array();
+		}
+		
 		$settings = array();
-		if ( $results ) {
-			foreach ( $results as $row ) {
-				$settings[ $row['setting_key'] ] = $row['setting_value'];
-				$this->settings_cache[ $row['setting_key'] ] = $row['setting_value'];
+		foreach ( $results as $row ) {
+			$key = $row['setting_key'] ?? '';
+			$value = $row['setting_value'] ?? '';
+			if ( ! empty( $key ) ) {
+				$settings[ $key ] = maybe_unserialize( $value );
 			}
 		}
-
+		
+		$this->settings_cache = $settings;
 		return $settings;
+	}
+
+	public function save_setting( $key, $value ) {
+		if ( ! $this->ensure_table_exists() ) {
+			return false;
+		}
+
+		global $wpdb;
+		$table = $this->get_table_name();
+		
+		$result = $wpdb->replace(
+			$table,
+			array(
+				'setting_key'   => $key,
+				'setting_value' => maybe_serialize( $value ),
+			),
+			array( '%s', '%s' )
+		);
+		
+		if ( false !== $result ) {
+			$this->settings_cache = null;
+		}
+		
+		return false !== $result;
+	}
+
+	public static function uninstall() {
+		$instance = new self();
+		$cleanup = $instance->get_setting( 'cleanup_on_uninstall', '1' );
+		
+		if ( '1' !== $cleanup ) {
+			return;
+		}
+		
+		global $wpdb;
+		$table = $instance->get_table_name();
+		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table ) );
 	}
 }
