@@ -364,44 +364,22 @@ class LFO_Admin {
 			wp_die( esc_html__( 'Security check failed', 'login-forms-overhaul' ) );
 		}
 		
-		$settings = array(
-			'enable_plugin' => isset( $_POST['enable_plugin'] ) ? '1' : '0',
-			'use_default_styles' => isset( $_POST['use_default_styles'] ) ? '1' : '0',
-			'custom_css' => isset( $_POST['custom_css'] ) ? wp_strip_all_tags( wp_unslash( $_POST['custom_css'] ) ) : '',
-			'custom_js' => isset( $_POST['custom_js'] ) ? wp_strip_all_tags( wp_unslash( $_POST['custom_js'] ) ) : '',
-			'logo_url' => isset( $_POST['logo_url'] ) ? esc_url_raw( wp_unslash( $_POST['logo_url'] ) ) : '',
-			'logo_link_url' => isset( $_POST['logo_link_url'] ) ? esc_url_raw( wp_unslash( $_POST['logo_link_url'] ) ) : home_url(),
-			'hide_login_errors' => isset( $_POST['hide_login_errors'] ) ? '1' : '0',
-			'custom_error_message' => isset( $_POST['custom_error_message'] ) ? sanitize_text_field( wp_unslash( $_POST['custom_error_message'] ) ) : 'Invalid credentials.',
-			'disable_language_switcher' => isset( $_POST['disable_language_switcher'] ) ? '1' : '0',
-			'disable_privacy_link' => isset( $_POST['disable_privacy_link'] ) ? '1' : '0',
-			'disable_back_to_site' => isset( $_POST['disable_back_to_site'] ) ? '1' : '0',
-			'logout_redirect_url' => isset( $_POST['logout_redirect_url'] ) ? esc_url_raw( wp_unslash( $_POST['logout_redirect_url'] ) ) : '',
-			'logout_skip_confirmation' => isset( $_POST['logout_skip_confirmation'] ) ? '1' : '0',
-			'login_redirect_subscriber' => isset( $_POST['login_redirect_subscriber'] ) ? esc_url_raw( wp_unslash( $_POST['login_redirect_subscriber'] ) ) : '',
-			'hide_session_expire' => isset( $_POST['hide_session_expire'] ) ? '1' : '0',
-			'cleanup_on_uninstall' => isset( $_POST['cleanup_on_uninstall'] ) ? '1' : '0',
-		);
-		
-		if ( isset( $_POST['role_exceptions'] ) && is_array( $_POST['role_exceptions'] ) ) {
-			$settings['role_exceptions'] = array_map( 'sanitize_text_field', wp_unslash( $_POST['role_exceptions'] ) );
-		} else {
-			$settings['role_exceptions'] = array();
-		}
-		
-		if ( isset( $_POST['ip_allowlist'] ) ) {
-			$ip_list = sanitize_textarea_field( wp_unslash( $_POST['ip_allowlist'] ) );
-			$ips = array_filter( array_map( 'trim', explode( "\n", $ip_list ) ) );
-			$settings['ip_allowlist'] = $ips;
-		} else {
-			$settings['ip_allowlist'] = array();
-		}
-		
-		foreach ( $settings as $key => $value ) {
-			$this->database->save_setting( $key, $value );
-		}
-		
 		$tab = isset( $_POST['tab'] ) ? sanitize_text_field( wp_unslash( $_POST['tab'] ) ) : 'general';
+		
+		switch ( $tab ) {
+			case 'general':
+				$this->save_general_settings();
+				break;
+			case 'styling':
+				$this->save_styling_settings();
+				break;
+			case 'behavior':
+				$this->save_behavior_settings();
+				break;
+			case 'access':
+				$this->save_access_settings();
+				break;
+		}
 		
 		wp_safe_redirect( add_query_arg(
 			array(
@@ -412,5 +390,65 @@ class LFO_Admin {
 			admin_url( 'themes.php' )
 		) );
 		exit;
+	}
+
+	private function save_general_settings() {
+		$settings = array(
+			'enable_plugin' => isset( $_POST['enable_plugin'] ) ? '1' : '0',
+			'cleanup_on_uninstall' => isset( $_POST['cleanup_on_uninstall'] ) ? '1' : '0',
+		);
+		
+		foreach ( $settings as $key => $value ) {
+			$this->database->save_setting( $key, $value );
+		}
+	}
+
+	private function save_styling_settings() {
+		$settings = array(
+			'use_default_styles' => isset( $_POST['use_default_styles'] ) ? '1' : '0',
+			'custom_css' => isset( $_POST['custom_css'] ) ? wp_strip_all_tags( wp_unslash( $_POST['custom_css'] ) ) : '',
+			'custom_js' => isset( $_POST['custom_js'] ) ? wp_strip_all_tags( wp_unslash( $_POST['custom_js'] ) ) : '',
+			'logo_url' => isset( $_POST['logo_url'] ) ? esc_url_raw( wp_unslash( $_POST['logo_url'] ) ) : '',
+			'logo_link_url' => isset( $_POST['logo_link_url'] ) ? esc_url_raw( wp_unslash( $_POST['logo_link_url'] ) ) : home_url(),
+		);
+		
+		foreach ( $settings as $key => $value ) {
+			$this->database->save_setting( $key, $value );
+		}
+	}
+
+	private function save_behavior_settings() {
+		$settings = array(
+			'hide_login_errors' => isset( $_POST['hide_login_errors'] ) ? '1' : '0',
+			'custom_error_message' => isset( $_POST['custom_error_message'] ) ? sanitize_text_field( wp_unslash( $_POST['custom_error_message'] ) ) : 'Invalid credentials.',
+			'disable_language_switcher' => isset( $_POST['disable_language_switcher'] ) ? '1' : '0',
+			'disable_privacy_link' => isset( $_POST['disable_privacy_link'] ) ? '1' : '0',
+			'disable_back_to_site' => isset( $_POST['disable_back_to_site'] ) ? '1' : '0',
+			'logout_redirect_url' => isset( $_POST['logout_redirect_url'] ) ? esc_url_raw( wp_unslash( $_POST['logout_redirect_url'] ) ) : '',
+			'logout_skip_confirmation' => isset( $_POST['logout_skip_confirmation'] ) ? '1' : '0',
+			'login_redirect_subscriber' => isset( $_POST['login_redirect_subscriber'] ) ? esc_url_raw( wp_unslash( $_POST['login_redirect_subscriber'] ) ) : '',
+			'hide_session_expire' => isset( $_POST['hide_session_expire'] ) ? '1' : '0',
+		);
+		
+		foreach ( $settings as $key => $value ) {
+			$this->database->save_setting( $key, $value );
+		}
+	}
+
+	private function save_access_settings() {
+		if ( isset( $_POST['role_exceptions'] ) && is_array( $_POST['role_exceptions'] ) ) {
+			$role_exceptions = array_map( 'sanitize_text_field', wp_unslash( $_POST['role_exceptions'] ) );
+		} else {
+			$role_exceptions = array();
+		}
+		$this->database->save_setting( 'role_exceptions', $role_exceptions );
+		
+		if ( isset( $_POST['ip_allowlist'] ) ) {
+			$ip_list = sanitize_textarea_field( wp_unslash( $_POST['ip_allowlist'] ) );
+			$ips = array_filter( array_map( 'trim', explode( "\n", $ip_list ) ) );
+		} else {
+			$ips = array();
+		}
+		$this->database->save_setting( 'ip_allowlist', $ips );
 	}
 }
